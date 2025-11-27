@@ -1,0 +1,26 @@
+# === Python / Django ===
+backend/venv/
+backend/**/__pycache__/
+backend/*.pyc
+backend/*.sqlite3
+backend/.env 
+
+# Django logs
+backend/logs/
+*.log
+
+# Excel data (optional if sensitive)
+# backend/api/data/*.xlsx
+
+# === Node / React ===
+frontend/realestate-ui/node_modules/
+frontend/realestate-ui/.env
+frontend/realestate-ui/dist/
+
+# === OS files ===
+.DS_Store
+Thumbs.db
+
+# === IDE ===
+.vscode/
+.idea/
