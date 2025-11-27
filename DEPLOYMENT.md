@@ -38,7 +38,17 @@ PORT=10000
 - **Name:** `real-estate-chatbot` (or any name you prefer)
 - **Environment:** `Python 3`
 - **Build Command:** `cd backend && pip install -r requirements.txt`
-- **Start Command:** `cd backend && python manage.py collectstatic --noinput && python manage.py migrate && python manage.py runserver 0.0.0.0:$PORT`
+- **Start Command (recommended):** `cd backend && python run_server.py`
+
+   Or set the project root `Procfile` to use the `run_server.py` script (recommended for Render):
+   ```
+   web: python backend/run_server.py
+   ```
+
+   If you prefer a direct `manage.py` invocation instead, use:
+   ```
+   cd backend && python manage.py collectstatic --noinput && python manage.py migrate && python manage.py runserver 0.0.0.0:$PORT
+   ```
 
 **Advanced Settings:**
 - **Root Directory:** Leave empty (use repository root)
@@ -76,6 +86,11 @@ The deployment will:
 4. ✅ Collect static files with `collectstatic`
 5. ✅ Run database migrations
 6. ✅ Start the Django server on the correct port
+
+Note: the `manage.py` entry-point now includes a small convenience for hosting
+platforms: if you call `python manage.py runserver` without arguments and `PORT`
+is set in the environment, it will bind to `0.0.0.0:$PORT`. It will also try to
+run `migrate` and `collectstatic` automatically before starting the server.
 
 ## Troubleshooting
 
