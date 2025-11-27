@@ -120,7 +120,16 @@ If you want to deploy the React frontend separately:
 1. Create another Web Service in Render for the frontend
 2. Set build command: `cd frontend/realestate-ui && npm install && npm run build`
 3. Set start command: `cd frontend/realestate-ui && npm run preview -- --host 0.0.0.0 --port $PORT`
-4. Update the API base URL in `frontend/realestate-ui/src/api.js` to point to your backend service
+4. Optional: Add `VITE_API_BASE_URL` environment variable to your frontend service to point to your backend URL (e.g. `https://real-state-1-80ov.onrender.com/api`).
+5. Vite preview config now allows `.onrender.com` subdomains by default (see `frontend/realestate-ui/vite.config.js`). If you see a message like:
+
+```
+Blocked request. This host ("real-state-h237.onrender.com") is not allowed.
+```
+
+Then add the specific host to `preview.allowedHosts` in `vite.config.js` or set `allowedHosts` to include `'.onrender.com'`.
+Note that for local development, the default remains `http://127.0.0.1:5173`.
+4. Update the API base URL in `frontend/realestate-ui/src/api.js` to point to your backend service or set `VITE_API_BASE_URL` for the frontend service in Render dashboard.
 
 ## Testing the Deployment
 
