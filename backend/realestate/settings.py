@@ -1,6 +1,7 @@
 # backend/realestate/settings.py
 from pathlib import Path
 import os
+from urllib.parse import urlparse
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -11,18 +12,32 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-wg+4836u$@mrh3!r_k*!$nloux
 
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
+# Helper: sanitize hosts from environment vars or input strings
+def _sanitize_host(host_str: str) -> str:
+    s = host_str.strip()
+    # If it's a URL like https://example.com/path, extract netloc
+    parsed = urlparse(s)
+    if parsed.netloc:
+        return parsed.netloc
+    # Otherwise, remove any scheme/leading/trailing slashes
+    return s.replace('http://', '').replace('https://', '').rstrip('/').split('/')[0]
+
+# Default hosts (no scheme, no path)
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     '0.0.0.0',
     'real-state-1-80ov.onrender.com',
-    'https://real-state-h237.onrender.com/',
-    '.onrender.com',  # Allow all Render subdomains
+    'real-state-h237.onrender.com',
+    '.onrender.com',  # wildcard subdomains for Render
 ]
 
 # Add any additional hosts from environment variable
 if os.getenv('ALLOWED_HOSTS'):
-    ALLOWED_HOSTS.extend(os.getenv('ALLOWED_HOSTS').split(','))
+    extra_hosts = [h for h in os.getenv('ALLOWED_HOSTS').split(',') if h.strip()]
+    ALLOWED_HOSTS.extend([_sanitize_host(h) for h in extra_hosts])
+
+print('[INFO] Final ALLOWED_HOSTS:', ALLOWED_HOSTS)
 
 
 # Application definition
@@ -55,12 +70,36 @@ MIDDLEWARE = [
 CORS_ALLOW_ALL_ORIGINS = DEBUG  # Only allow all origins in development
 
 if not DEBUG:
-    # In production, specify allowed origins
-    CORS_ALLOWED_ORIGINS = [
-        "https://real-state-h237.onrender.com/",
-        
-        # Add your actual frontend domains here
+    # In production, specify allowed origins.
+    # Allow origins by default for Render subdomains. These should be scheme+host
+    # and must NOT include a path or trailing slash.
+    DEFAULT_CORS_ORIGINS = [
+        'https://real-state-h237.onrender.com',
     ]
+
+    # Helper to sanitize origins: ensure scheme & netloc only (drop path)
+    def _sanitize_origin(o: str) -> str:
+        s = o.strip()
+        parsed = urlparse(s)
+        if parsed.scheme and parsed.netloc:
+            return f"{parsed.scheme}://{parsed.netloc}"
+        # if only netloc or naked host provided, default to https
+        if parsed.path and not parsed.scheme and not parsed.netloc:
+            # path contains 'example.com' (no scheme was provided); treat as host
+            host = parsed.path.split('/')[0]
+            return f"https://{host}"
+        # Fallback: return the original trimmed string
+        return s.rstrip('/')
+
+    CORS_ALLOWED_ORIGINS = [
+        _sanitize_origin(o) for o in DEFAULT_CORS_ORIGINS
+    ]
+
+    # Allow override via env var CORS_ALLOWED_ORIGINS (comma-separated)
+    if os.getenv('CORS_ALLOWED_ORIGINS'):
+        env_origins = [o.strip() for o in os.getenv('CORS_ALLOWED_ORIGINS').split(',') if o.strip()]
+        CORS_ALLOWED_ORIGINS = [ _sanitize_origin(o) for o in env_origins ]
+    print('[INFO] CORS_ALLOWED_ORIGINS:', CORS_ALLOWED_ORIGINS)
     
     # Allow specific headers and methods
     CORS_ALLOW_HEADERS = [

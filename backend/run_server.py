@@ -23,9 +23,9 @@ def main():
         print("[INFO] Collecting static files...")
         subprocess.run([sys.executable, 'manage.py', 'collectstatic', '--noinput'], check=True)
         
-        # Apply database migrations
+        # Apply database migrations (no input during migration)
         print("[INFO] Applying database migrations...")
-        subprocess.run([sys.executable, 'manage.py', 'migrate'], check=True)
+        subprocess.run([sys.executable, 'manage.py', 'migrate', '--noinput'], check=True)
         
         # Start the server with proper binding
         print(f"[INFO] Starting server on 0.0.0.0:{port}")
