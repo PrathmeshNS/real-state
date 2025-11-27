@@ -16,6 +16,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     '0.0.0.0',
     'real-state-1-80ov.onrender.com',
+    'https://real-state-h237.onrender.com/',
     '.onrender.com',  # Allow all Render subdomains
 ]
 
@@ -56,7 +57,8 @@ CORS_ALLOW_ALL_ORIGINS = DEBUG  # Only allow all origins in development
 if not DEBUG:
     # In production, specify allowed origins
     CORS_ALLOWED_ORIGINS = [
-        "https://your-frontend-domain.com",
+        "https://real-state-h237.onrender.com/",
+        
         # Add your actual frontend domains here
     ]
     
