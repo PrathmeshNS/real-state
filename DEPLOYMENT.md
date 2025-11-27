@@ -64,6 +64,7 @@ In the Render dashboard, under "Environment Variables", add:
 | `DEBUG` | `False` |
 | `SECRET_KEY` | Generate a secure Django secret key |
 | `ALLOWED_HOSTS` | Your Render domain (optional, already configured in code) |
+| `CORS_ALLOWED_ORIGINS` | Comma-separated list of frontend origin(s), e.g. `https://your-frontend-domain.com` (do NOT include trailing slashes or paths) |
 
 To generate a Django secret key, you can use:
 ```python
